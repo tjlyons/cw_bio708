@@ -150,4 +150,51 @@ df0[c(2,4),] # access row #2 and 4
 
 # exercise ----------------------------------------------------------------
 
+# vector
+x1 <- c(1, 2, 3)
+x2 <- rep(1, 6)
+x3 <- seq(0, 10, length = 20)
 
+x1 <- c("a", "b", "c")
+x2 <- rep("a", 6)
+x3 <- sample(letters, size = 20)
+
+set.seed(1)
+x <- rnorm(100)
+
+which(x > 2)
+x[which(x > 2)]
+
+# matrix
+m_x1 <- cbind(rep(1, 4), rep(2, 4), rep(3, 4), rep(3, 4))
+m_x2 <- rbind(rep(1, 4), rep(2, 4), rep(3, 4), rep(3, 4))
+
+m_xc1 <- cbind(rep("a", 4), rep("b", 4), rep("c", 4), rep("d", 4))
+m_xc2 <- rbind(rep("a", 4), rep("b", 4), rep("c", 4), rep("d", 4))
+
+set.seed(1)
+m_x <- matrix(rnorm(100), nrow = 10, ncol = 10)
+which(m_x > 2, arr.ind = TRUE)
+
+mean(m_x[m_x > 2])
+
+# data frame
+df0 <- data.frame(x = sample(letters, size = 10),
+                  y = rnorm(n = 10, mean = 0, sd = 1),
+                  z = rnorm(n = 10, mean = 10, sd = 5))
+
+class(df0$x)
+class(df0$y)
+class(df0$z)
+
+set.seed(1)
+x <- rnorm(100, mean = 10, sd = 3)
+y <- rpois(100, lambda = 10)
+z <- rep(c("VA", "NC"), 50)
+df0 <- data.frame(temperature = x, abundance = y, state = z)
+
+mean(df0[df0$state == "NC", "temperature"])
+mean(df0[df0$state == "VA", "temperature"])
+
+mean(df0[df0$state == "NC", "abundance"])
+mean(df0[df0$state == "VA", "abundance"])
