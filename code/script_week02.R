@@ -325,4 +325,54 @@ left_join(x = df1,
 
 # exercise tidyverse ------------------------------------------------------
 
+install.packages('ggplot2movies')
+pacman::p_load(ggplot2movies,
+               tidyverse)
+data('movies')
+
+# 1a
+movies <- movies %>% 
+  mutate(scl_rating = rating - mean(rating))
+
+# 1b
+movies_2000 <- movies %>% 
+  filter(year >= 2000)
+
+# 1c
+movies_sel <- movies %>% 
+  select(title, year, budget, length, rating, votes)
+
+movies_sel <- movies %>% 
+  select(title:votes)
+
+movies_sel <- movies %>% 
+  select(1:6)
+
+# 1d
+movies_rename <- movies %>% 
+  rename(length_in_min = length)
+
+# 2
+
+movies %>% 
+  group_by(year) %>% 
+  summarize(mu_bu = mean(budget, na.rm = TRUE))
+
+# 3
+dat <- tibble(id = 1:10,
+              x = rnorm(10),
+              y = rnorm(10))
+
+dat %>% 
+  pivot_longer(cols = c(x, y),
+               names_to = "var",
+               values_to = "value")
+
+# 4
+
+movies %>% 
+  filter(year >= 1990) %>% 
+  select(title:votes, mpaa, Action, Drama) %>% 
+  group_by(mpaa, Action) %>% 
+  summarize(avg_rating = mean(rating))
 
