@@ -5,6 +5,7 @@
 #' author: Akira Terui
 #' ---
 
+#+ message = FALSE, warning = FALSE
 library(tidyverse)
 
 # central tendency --------------------------------------------------------
