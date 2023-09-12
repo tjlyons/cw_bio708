@@ -120,3 +120,79 @@ print(mm_x)
 ## for y
 mm_y <- mad_y / median(y)
 print(mm_y)
+
+
+# laboratory --------------------------------------------------------------
+
+library(tidyverse)
+
+# 1. new vector `z`
+
+z <- exp(rnorm(n = 1000, mean = 0, sd = 0.1))
+
+mu <- mean(z)
+mug <- exp(mean(log(z)))
+# mug <- prod(z)^(1/length(z))
+med <- median(z)
+
+# 2. histogram
+df_z <- tibble(z = z)
+
+g0 <- df_z %>% 
+  ggplot(aes(x = z)) + 
+  geom_histogram()
+
+print(g0)
+
+# 3. add vlines
+g0 + 
+  geom_vline(xintercept = mu,
+             color = "salmon") +
+  geom_vline(xintercept = mug,
+             color = "steelblue") +
+  geom_vline(xintercept = med,
+             color = "seagreen")
+
+# 4. comparison
+mu; mug; med
+
+#5. z_rev
+z_rev <- -z + max(z) + 0.1
+
+mur <- mean(z_rev)
+mugr <- exp(mean(log(z_rev)))
+medr <- median(z_rev)
+
+df_z <- df_z %>% 
+  mutate(z_rev = z_rev)
+
+g1 <- df_z %>% 
+  ggplot(aes(x = z_rev)) + 
+  geom_histogram()
+
+g1 + 
+  geom_vline(xintercept = mur,
+             color = "salmon") +
+  geom_vline(xintercept = mugr,
+             color = "steelblue") +
+  geom_vline(xintercept = medr,
+             color = "seagreen")
+
+# variation
+
+w <- rnorm(100, mean = 10, sd = 1)
+head(w) # show first 10 elements in w
+
+m <- w * 1000
+
+## sd
+sd_w <- sd(w)
+sd_m <- sd(m)
+
+## MAD
+mad_w <- median(abs(w - median(w)))
+mad_m <- median(abs(m - median(m)))
+
+## CV
+sd_w / mean(w)
+sd_m / mean(m)
