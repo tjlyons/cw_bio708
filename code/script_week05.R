@@ -156,4 +156,86 @@ g_mu / g_var / g_var_ub
 
 # laboratory --------------------------------------------------------------
 
+# Q1 get 50 & 100 measures each
 
+## declare some essential objects
+var50 <- var100 <- mu50 <- mu100 <- NULL
+subsize <- 100
+
+## loop over
+for(i in 1:subsize) {
+  df_i50 <- df_h0 %>% 
+    sample_n(size = 50)
+  
+  df_i100 <- df_h0 %>% 
+    sample_n(size = 100)
+  
+  mu50[i] <- mean(df_i50$height)  
+  mu100[i] <- mean(df_i100$height)  
+  var50[i] <- var(df_i50$height)  
+  var100[i] <- var(df_i100$height)  
+}
+
+## create tibble
+df_par <- tibble(value = c(mu50, mu100, var50, var100),
+                 type = c(rep("mean", 2 * subsize),
+                          rep("var", 2 * subsize)),
+                 size = c(rep(50, subsize),
+                          rep(100, subsize),
+                          rep(50, subsize),
+                          rep(100, subsize)),
+                 true_par = ifelse(type == "mean", mu, sigma2))
+
+## histogram
+df_par %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram() +
+  facet_grid(rows = vars(size),
+             cols = vars(type),
+             scales = "free",
+             labeller = label_both) +
+  geom_vline(aes(xintercept = true_par)) +
+  theme_bw()
+
+# Q2 non-random samples
+
+df_h10 <- df_h0 %>% 
+  filter(height >= 10)
+
+## declare some essential objects
+var50 <- var100 <- mu50 <- mu100 <- NULL
+subsize <- 100
+
+## loop over
+for(i in 1:subsize) {
+  df_i50 <- df_h10 %>% 
+    sample_n(size = 50)
+  
+  df_i100 <- df_h0 %>% 
+    sample_n(size = 100)
+  
+  mu50[i] <- mean(df_i50$height)  
+  mu100[i] <- mean(df_i100$height)  
+  var50[i] <- var(df_i50$height)  
+  var100[i] <- var(df_i100$height)  
+}
+
+## create tibble
+df_par10 <- tibble(value = c(mu50, mu100, var50, var100),
+                   type = c(rep("mean", 2 * subsize),
+                            rep("var", 2 * subsize)),
+                   size = c(rep(50, subsize),
+                            rep(100, subsize),
+                            rep(50, subsize),
+                            rep(100, subsize)),
+                   true_par = ifelse(type == "mean", mu, sigma2))
+
+df_par10 %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(fill = "salmon") +
+  facet_grid(rows = vars(size),
+             cols = vars(type),
+             scales = "free",
+             labeller = label_both) +
+  geom_vline(aes(xintercept = true_par)) +
+  theme_bw()
