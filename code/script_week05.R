@@ -152,3 +152,8 @@ g_var_ub <- df_sample %>%
                                max(c(var_i, var_ub_i))))
 
 g_mu / g_var / g_var_ub
+
+
+# laboratory --------------------------------------------------------------
+
+
