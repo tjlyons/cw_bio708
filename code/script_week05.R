@@ -156,7 +156,7 @@ g_mu / g_var / g_var_ub
 
 # laboratory --------------------------------------------------------------
 
-# Q1 get 50 & 100 measures each
+## Q1 get 50 & 100 measures each ----
 
 ## declare some essential objects
 var50 <- var100 <- mu50 <- mu100 <- NULL
@@ -176,7 +176,39 @@ for(i in 1:subsize) {
   var100[i] <- var(df_i100$height)  
 }
 
-## create tibble
+## approach 1: use patchwork
+### create tibble
+df_par_patch <- tibble(mu50 = mu50,
+                       mu100 = mu100,
+                       var50 = var50,
+                       var100 = var100)
+
+### histogram
+library(patchwork)
+g1 <- df_par_patch %>% 
+  ggplot(aes(x = mu50)) +
+  geom_histogram() +
+  geom_vline(xintercept = mu)
+
+g2 <- df_par_patch %>% 
+  ggplot(aes(x = mu100)) +
+  geom_histogram() +
+  geom_vline(xintercept = mu)
+
+g3 <- df_par_patch %>% 
+  ggplot(aes(x = var50)) +
+  geom_histogram() +
+  geom_vline(xintercept = sigma2)
+
+g4 <- df_par_patch %>% 
+  ggplot(aes(x = var100)) +
+  geom_histogram() +
+  geom_vline(xintercept = sigma2)
+
+(g1 / g2) | (g3 / g4)
+
+## approach 2: use facet_grid()
+### create tibble
 df_par <- tibble(value = c(mu50, mu100, var50, var100),
                  type = c(rep("mean", 2 * subsize),
                           rep("var", 2 * subsize)),
@@ -184,9 +216,11 @@ df_par <- tibble(value = c(mu50, mu100, var50, var100),
                           rep(100, subsize),
                           rep(50, subsize),
                           rep(100, subsize)),
-                 true_par = ifelse(type == "mean", mu, sigma2))
+                 true_par = ifelse(type == "mean",
+                                   mu,
+                                   sigma2))
 
-## histogram
+### histogram
 df_par %>% 
   ggplot(aes(x = value)) +
   geom_histogram() +
@@ -197,7 +231,7 @@ df_par %>%
   geom_vline(aes(xintercept = true_par)) +
   theme_bw()
 
-# Q2 non-random samples
+## Q2 non-random samples ----
 
 df_h10 <- df_h0 %>% 
   filter(height >= 10)
