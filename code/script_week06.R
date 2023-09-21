@@ -169,7 +169,8 @@ max_k <- max(k)
 k_at <- seq(min_k, max_k, by = 1)
 
 ## 2.2 generate a figure
-df_pois <- tibble(x = k_at, pm = dpois(k_at, lambda = lambda_hat)) %>% 
+df_pois <- tibble(x = k_at,
+                  pm = dpois(k_at, lambda = lambda_hat)) %>% 
   mutate(freq = length(k) * pm)
 
 tibble(k = k) %>% 
@@ -179,5 +180,5 @@ tibble(k = k) %>%
              aes(x = x,
                  y = freq)) +
   geom_line(data = df_pois,
-             aes(x = x,
-                 y = freq))
+            aes(x = x,
+                y = freq))
