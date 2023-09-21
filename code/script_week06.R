@@ -18,7 +18,7 @@ df_h0 %>%
   geom_histogram(binwidth = 1) + # specify binwidth
   geom_vline(aes(xintercept = mean(height))) # draw vertical line at the mean
 
-# probablity distribution
+# probability distribution
 
 # vector of x values
 # seq() generate min to max values with specified numbers of elements or interval
@@ -121,5 +121,63 @@ df_count %>%
                 y = freq),
             linetype = "dashed") +
   geom_point(data = df_prob,
+             aes(x = x,
+                 y = freq))
+
+
+# laboratory --------------------------------------------------------------
+
+rm(list = ls())
+
+# 1. normal distribution
+
+## 1.1 generate a random variable
+z <- rnorm(n = 50, mean = 100, sd = 5)
+mu <- mean(z)
+sigma <- sd(z)
+
+## 1.2 generate a figure
+bin <- seq(floor(min(z)), ceiling(max(z)), by = 1)
+
+p <- NULL
+for (i in 1:(length(bin) - 1)) {
+  p[i] <- pnorm(bin[i + 1], mean = mu, sd = sigma) - pnorm(bin[i], mean = mu, sd = sigma)
+}
+
+df_norm <- tibble(p = p, x = bin[-length(bin)]) %>% 
+  mutate(freq = p * length(z))
+
+tibble(z = z) %>% 
+  ggplot(aes(x = z)) +
+  geom_histogram(binwidth = 1,
+                 center = 0) +
+  geom_point(data = df_norm,
+             aes(x = x,
+                 y = freq)) + 
+  geom_line(data = df_norm,
+            aes(x = x,
+                y = freq))
+
+# 2. Poisson distribution
+
+## 2.1 generate a random variable
+k <- rpois(n = 1000, lambda = 5)
+lambda_hat <- mean(k)
+
+min_k <- min(k)
+max_k <- max(k)
+k_at <- seq(min_k, max_k, by = 1)
+
+## 2.2 generate a figure
+df_pois <- tibble(x = k_at, pm = dpois(k_at, lambda = lambda_hat)) %>% 
+  mutate(freq = length(k) * pm)
+
+tibble(k = k) %>% 
+  ggplot() +
+  geom_histogram(aes(x = k)) +
+  geom_point(data = df_pois,
+             aes(x = x,
+                 y = freq)) +
+  geom_line(data = df_pois,
              aes(x = x,
                  y = freq))
