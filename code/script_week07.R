@@ -204,7 +204,7 @@ a <- (sd_x^2 / length(x)) + (sd_y^2 / length(y))
 t_value <- (mu_x - mu_y) / sqrt(a)
 
 # degree of freedom for welch's test
-num <- var(x) / length(x) + var(y) / length(y)
+num <- (var(x) / length(x)) + (var(y) / length(y))
 dem1 <- ((var(x) / length(x))^2) / (length(x) - 1)
 dem2 <- ((var(y) / length(y))^2) / (length(y) - 1)
 
