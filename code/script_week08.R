@@ -5,13 +5,15 @@
 #' author: Akira Terui
 #' ---
 
+# class work --------------------------------------------------------------
+
 #+ warning = F, message = F
 library(tidyverse)
 
-# read data
+## read data
 df_anova <- read_csv(here::here("data_raw/data_fish_length_anova.csv"))
 
-# check
+### check
 distinct(df_anova, lake)
 
 df_anova %>% 
@@ -19,7 +21,7 @@ df_anova %>%
 
 unique(df_anova$lake)
 
-# figure
+### figure
 df_anova %>% 
   ggplot(aes(x = lake,
              y = length)) +
@@ -40,21 +42,18 @@ df_anova %>%
               height = 0.2,
               alpha = 0.5)
 
-# anova in R
+### anova in R
 fit <- aov(formula = length ~ lake,
            data = df_anova)
 
 summary(fit)
 
 
-# behind anova ------------------------------------------------------------
+## behind anova
 
-# between group variability
+### between group variability
 
-# ## whole
-mu <- mean(df_anova$length)
-
-## group-level information
+### group-level information
 x_a <- df_anova %>%
   filter(lake == "a") %>%
   pull(length)
@@ -71,17 +70,17 @@ mu_a <- mean(x_a)
 mu_b <- mean(x_b)
 mu_c <- mean(x_c)
 
-# ## variability
+# ### variability
 # ss_ga <- (mu_a - mu)^2 * length(x_a)
 # ss_gb <- (mu_b - mu)^2 * length(x_b)
 # ss_gc <- (mu_c - mu)^2 * length(x_c)
 # 
 # ss_g <- ss_ga + ss_gb + ss_gc
 
-# estimate overall mean
+### estimate overall mean
 mu <- mean(df_anova$length)
 
-# estimate group means and sample size each
+### estimate group means and sample size each
 df_g <- df_anova %>% 
   group_by(lake) %>% 
   summarize(mu_g = mean(length), # mean for each group
@@ -93,7 +92,7 @@ ss_g <- df_g %>%
   pull(ss) %>% 
   sum()
 
-# within-group variability
+### within-group variability
 dev_ia <- (x_a - mu_a)^2
 dev_ib <- (x_b - mu_b)^2
 dev_ic <- (x_c - mu_c)^2
@@ -106,16 +105,15 @@ ss_w <- sum(dev_ia) + sum(dev_ib) + sum(dev_ic)
 #   ungroup() %>% 
 #   mutate(dev_i = (length - mu_g)^2) # deviation from group mean for each fish
 
-# convert variability into SD
-
+### convert variability into SD
 var_g <- ss_g / (3 - 1)
 var_w <- ss_w / (150 - 3)
 
-# get F value
+### get F value
 f_value <- var_g / var_w
 
 
-# f distribution ----------------------------------------------------------
+### f distribution 
 
 x <- seq(0, 10, by = 0.1)
 y <- df(x, df1 = 3 - 1, df2 = 150 - 3)
@@ -129,3 +127,46 @@ tibble(x = x, y = y) %>%
              linetype = "dashed")
 
 p_value <- 1 - pf(f_value, df1 = 3 - 1, df2 = 150 - 3)
+
+
+# laboratory --------------------------------------------------------------
+
+library(tidyverse)
+
+# use PlantGrowth dataset
+# create figure like 5.1
+df_pg <- as_tibble(PlantGrowth)
+
+g_vio <- df_pg %>% 
+  ggplot(aes(x = group,
+             y = weight)) +
+  geom_violin(draw_quantiles = 0.5,
+              fill = "steelblue",
+              alpha = 0.25) +
+  geom_jitter(width = 0.1,
+              alpha = 0.25) +
+  theme_bw() +
+  labs(y = "Weight",
+       x = "Group")
+
+# create figure like 4.1
+
+df_mu <- df_pg %>% 
+  group_by(group) %>% 
+  summarize(mu = mean(weight),
+            sigma = sd(weight))
+
+g_bar <- df_mu %>% 
+  ggplot(aes(x = group,
+             y = mu)) +
+  geom_segment(aes(y = mu - sigma,
+                   yend = mu + sigma,
+                   x = group,
+                   xend = group)) +
+  geom_point(size = 4) +
+  geom_jitter(data = df_pg,
+              aes(x = group,
+                  y = weight),
+              width = 0.1,
+              alpha = 0.25)
+  
