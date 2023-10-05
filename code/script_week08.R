@@ -133,6 +133,7 @@ p_value <- 1 - pf(f_value, df1 = 3 - 1, df2 = 150 - 3)
 
 library(tidyverse)
 
+## exercise 1 ####
 # use PlantGrowth dataset
 # create figure like 5.1
 df_pg <- as_tibble(PlantGrowth)
@@ -170,3 +171,44 @@ g_bar <- df_mu %>%
               width = 0.1,
               alpha = 0.25)
   
+## exercise 2 ####
+# anova
+fit <- aov(formula = weight ~ group,
+           data = df_pg)
+
+summary(fit)
+
+## exercise 3 ####
+# try different numbers of df1 and df2
+# 1) we have 5 groups with 30 measures
+# df1 = 5 - 1
+# df2 = 30 - 5
+# use pf() and f_value = 4.846
+
+1 - pf(4.846, df1 = 4, df2 = 25)
+
+# 2) we have 3 groups with 15 measures
+
+1 - pf(4.846, df1 = 2, df2 = 12)
+
+# 3) we have 4 groups with 20 measures
+
+1 - pf(4.846, df1 = 3, df2 = 16)
+
+# visual for different f distributions
+nx <- 1000
+x <- seq(0, 10, length = nx)
+df_y <- tibble(y = c(df(x, df1 = 4, df2 = 25),
+                     df(x, df1 = 2, df2 = 12),
+                     df(x, df1 = 3, df2 = 16))) %>% 
+  mutate(x = rep(x, 3),
+         df1 = rep(c(4, 2, 3), each = nx),
+         df2 = rep(c(25, 12, 16), each = nx),
+         df = paste(df1, df2, sep = ","))
+
+df_y %>% 
+  ggplot(aes(y = y,
+             x = x,
+             color = df)) +
+  geom_line()
+
