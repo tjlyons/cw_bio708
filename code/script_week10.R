@@ -1,5 +1,5 @@
 #' ---
-#' title: "Report week9"
+#' title: "Report week10"
 #' output: html_document
 #' date: "2023-10-12"
 #' author: Akira Terui
@@ -87,5 +87,55 @@ m_iris <- lm(Petal.Length ~ Petal.Width + Species,
 summary(m_iris)
 
 
+# prediction --------------------------------------------------------------
+n_rep <- 100
+x <- seq(min(iris$Petal.Width), max(iris$Petal.Width), length = n_rep)
+new_x <- rep(x, n_distinct(iris$Species))
+new_sp <- rep(unique(iris$Species), each = length(x))
+
+df_new <- tibble(Petal.Width = new_x,
+                 Species = new_sp)
+
+df_pred <- df_new %>% 
+  mutate(y_hat = predict(m_iris, newdata = .))
+
+g1 <- iris %>% 
+  ggplot(aes(x = Petal.Width,
+             y = Petal.Length,
+             color = Species)) +
+  geom_point(alpha = 0.5) +
+  geom_line(data = df_pred,
+            aes(y = y_hat)) # redefine y values for lines; x and color are inherited from ggplot()
+
+
 # lab ---------------------------------------------------------------------
 
+## 7.3.1 Normality Assumption
+eps <- resid(m_iris)
+shapiro.test(eps)
+
+## 7.3.2 Model Interpretation
+beta <- coef(m_iris)
+(i_setosa <- beta[1])
+(i_versicolor <- beta[1] + beta[3])
+(i_virginica <- beta[1] + beta[4])
+
+## 7.3.3 Alternative Model
+m0 <- lm(Petal.Length ~ Petal.Width,
+         data = iris)
+
+df_y <- tibble(Petal.Width = seq(min(iris$Petal.Width),
+                                 max(iris$Petal.Width),
+                                 length = 100)) %>%
+  mutate(y_hat = predict(m0, newdata = .))
+
+g0 <- iris %>%
+  ggplot(aes(x = Petal.Width,
+             y = Petal.Length)) +
+  geom_point() +
+  geom_line(data = df_y,
+            aes(y = y_hat))
+
+library(patchwork)
+
+g0 | g1
