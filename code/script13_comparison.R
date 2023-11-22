@@ -78,7 +78,6 @@ AIC(m2)
 # lab ---------------------------------------------------------------------
 
 library(palmerpenguins)
-
 df_pen0 <- penguins_raw
 
 # Question 1
@@ -126,7 +125,6 @@ df_pen <- df_pen0 %>%
           sex)
   
 # Analysis 1
-
 m <- glm(cc_binary ~ species + 
            culmen_length + 
            culmen_depth + 
@@ -143,3 +141,6 @@ library(MuMIn)
 options(na.action = "na.fail")
 ms <- dredge(m, rank = "AIC")
 subset(ms, delta < 2)
+
+mgood <- get.models(ms, subset = delta < 2)
+summary(mgood[[1]])
