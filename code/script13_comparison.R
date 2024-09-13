@@ -6,6 +6,7 @@
 #' ---
 
 #+ message = F, warning = F
+rm(list = ls())
 library(tidyverse)
 
 
@@ -110,13 +111,15 @@ colnames(df_pen0) <- cnm
 
 # Question 2
 
+sp <- unique(df_pen0$species)
+
 df_pen <- df_pen0 %>% 
   mutate(cc_binary = ifelse(clutch_completion == "Yes",
                             yes = 1,
                             no = 0),
-         species = case_when(species == "Adelie Penguin (Pygoscelis adeliae)" ~ "adelie",
-                             species == "Gentoo penguin (Pygoscelis papua)" ~ "gentoo",
-                             species == "Chinstrap penguin (Pygoscelis antarctica)" ~ "chinstrap")
+         species = case_when(species == sp[1] ~ "adelie",
+                             species == sp[2] ~ "gentoo",
+                             species == sp[3] ~ "chinstrap")
          ) %>% 
   drop_na(culmen_length,
           culmen_depth,
