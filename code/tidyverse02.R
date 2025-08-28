@@ -44,5 +44,33 @@ iris_l <- iris_w %>%
                values_to = "Sepal.Length"
                )
 
+# joining -----------------------------------------------------------------
+
+df1 <- tibble(Species = c("A", "B", "C"),
+              x = c(1, 2, 3))
+
+df2 <- tibble(Species = c("A", "B", "C"),
+              y = c(4, 5, 6))
+
+df12 <- left_join(x = df1,
+                  y = df2,
+                  by = "Species")
+
+## what happens if df2 does not contain species b?
+df2_minusB <- tibble(Species = c("A", "C"),
+                     y = c(4,6))
+
+left_join(x = df1,
+          y = df2_minusB,
+          by = "Species")
+
+left_join(x = df2_minusB,
+          y = df1,
+          by = "Species")
 
 
+# additional resource -----------------------------------------------------
+
+
+## library(swirl)
+## install_course_github("sysilviakim", "swirl-tidy")
