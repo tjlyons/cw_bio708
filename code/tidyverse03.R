@@ -46,3 +46,88 @@ df_means <- iris_sub %>%
   group_by(Species) %>% 
   summarize(mean_pw = mean(Petal.Width))
 
+
+# ggplot ------------------------------------------------------------------
+
+# basic syntax
+g_example <- ggplot(data = iris,
+                    mapping = aes(x = Sepal.Length,
+                                  y = Sepal.Width)) +
+  geom_point()
+
+# syntax with pipe
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length,
+                       y = Sepal.Width)) +
+  geom_point() 
+
+# color
+g_col <- iris %>% 
+  ggplot(mapping = aes(x= Sepal.Length,
+                       y= Sepal.Width, 
+                       color = Species)) +
+  geom_point()
+
+# pitfall, when you color points or anything
+
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length,
+                       y = Sepal.Width),
+         color = Species) +
+  geom_point()
+
+
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length,
+                       y = Sepal.Width)) +
+  geom_point(color = "salmon")
+
+
+## line plot
+# sample data
+df0 <- tibble(x = rep(1:50, 3),
+              y = x * 2)
+
+df0 %>% 
+  ggplot(mapping = aes(x = x,
+                       y = y)) +
+  geom_line()
+
+## histogram
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length)) +
+  geom_histogram()
+
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length,
+                       color = Species)) +
+  geom_histogram()
+
+iris %>% 
+  ggplot(mapping = aes(x = Sepal.Length,
+                       fill = Species)) +
+  geom_histogram()
+
+## Box plot
+
+iris %>% 
+  ggplot(mapping = aes(y = Sepal.Length,
+                       x = Species,
+                       fill = Species)) +
+  geom_boxplot() 
+
+## Using multiple layers
+iris %>% 
+  ggplot(aes(y = Sepal.Length,
+             x = Species,
+             fill = Species)) +
+  geom_boxplot() +
+  geom_point()
+
+iris %>% 
+  ggplot(aes(y = Sepal.Length,
+             x = Species,
+             fill = Species)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.5)
+
