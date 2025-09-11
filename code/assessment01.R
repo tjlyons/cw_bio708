@@ -17,7 +17,7 @@ v_abc100 <- c(rep("a", 20), rep("b", 30), rep("c", 50))
 set.seed(100)
 v_x <- rnorm(100)
 
-mean(v_x[v_x > 0])
+mu_x_plus <- mean(v_x > 0)
 
 # 4: Create a numeric matrix with the numbers 1 through 9 arranged in 3 rows × 3 columns.  
 # Assign it to `m_num`.
@@ -27,7 +27,7 @@ m_num <- matrix(data = 1:9, nrow = 3, ncol = 3)
 # 5: Create a base R data frame (`data.frame()` function) using `v_x` and `v_abc100`.  
 # Name the columns `"x"` for `v_x` and `"group"` for `v_abc`, and assign it to `df_sample`.
 
-df_sample <- data.frame(x = v_x, group = v_abc100)
+data_frame()
 
 
 # tidyverse ---------------------------------------------------------------
