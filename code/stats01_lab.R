@@ -1,4 +1,4 @@
-## library(tidyverse)
+library(tidyverse)
 
 # central tendency measures -----------------------------------------------
 
@@ -33,7 +33,7 @@ hist_zrev <- tibble(x = z_rev) %>%
   geom_vline(xintercept = zrev_gmu, color = "green")
 
 ## install.packages('patchwork')
-## library(patchwork)
+library(patchwork)
 hist_z / hist_zrev
 
 # variation measures ------------------------------------------------------
