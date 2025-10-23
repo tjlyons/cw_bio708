@@ -38,9 +38,6 @@ df_s3 %>%
 #    This procedure will yield 100 estimates of the mean Petal.Width from 5 individuals.
 
 
-mu_h0 <- mean(df_iris$Petal.Width)
-sd_h0 <- mean(df_iris$Petal.Width)
-
 mu5 <- NULL
 
 for (i in 1:100) {
@@ -128,7 +125,7 @@ pr10_pr0 <- pr10 - pr0
 df_t <- df_iris %>% 
   group_by(Species) %>% 
   summarize(mu = mean(Petal.Length),
-            sd = sd(Petal.Length))
+            var = var(Petal.Length))
   
 
 # 2. Perform a t-test comparing "Petal.Length" between "setosa" and "versicolor".
