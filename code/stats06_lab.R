@@ -36,9 +36,9 @@ summary(m_setosa)
 
 # exercise 3 --------------------------------------------------------------
 
-x <- rnorm(nrow(iris), mean = 0, sd = 1)
+v_x <- rnorm(nrow(iris), mean = 0, sd = 1)
 iris <- iris %>% 
-  mutate(x = x)
+  mutate(x = v_x)
 
 dx_setosa <- filter(iris, Species == "setosa")
 
