@@ -24,12 +24,10 @@ head(CO2)
 # CO2 dataframe is a base dataframe. Convert this to a class `tibble`
 # then assign to `df_co2`
 
-df_co2 <- as_tibble(CO2)
 
 # Q2
 # Convert column names to lowercase and reassign to `df_co2`
 
-df_co2 <- janitor::clean_names(df_co2)
 
 # Q3
 # Create scatter plots of CO₂ uptake versus ambient CO₂ concentration using `df_co2`.
@@ -37,23 +35,7 @@ df_co2 <- janitor::clean_names(df_co2)
 # - The y-axis should represent CO₂ assimilation rate
 # - Color the points by treatment.
 # - Create separate panels for each plant type (Quebec vs Mississippi) and combine the plots.
-# Call additional packages as needed
 
-f1 <- df_co2 %>% 
-  filter(type == "Quebec") %>% 
-  ggplot(aes(x = conc,
-             y = uptake,
-             color = treatment)) +
-  geom_point()
-
-f2 <- df_co2 %>% 
-  filter(type == "Mississippi") %>% 
-  ggplot(aes(x = conc,
-             y = uptake,
-             color = treatment)) +
-  geom_point()
-
-f1 + f2
 
 # Q4
 # The df_co2 dataset contains the following variables:
@@ -68,13 +50,8 @@ f1 + f2
 # - The main effect of treatment
 # - The interaction between concentration and treatment
 # 
-# Fit these models separately for each plant origin (type).
+# Fit these models separately for each plant origin.
 
-m01 <- lm(uptake ~ conc * treatment,
-          df_co2 %>% filter(type == "Quebec"))
-
-m02 <- lm(uptake ~ conc * treatment,
-          df_co2 %>% filter(type == "Mississippi"))
 
 # Q5
 # Based on the models fitted in Q4 for Quebec and Mississippi plants,
@@ -111,8 +88,7 @@ print(BCI)
 # Originally, each plot was a row and each species a column. 
 # After the transformation, each row represents a single species in a 
 # single plot, with columns indicating the plot (plot), species, and 
-# the corresponding count. This long format is easier to use for analysis 
-# and visualization.
+# the corresponding count.
 
 cnm <- colnames(BCI)
 
@@ -153,16 +129,12 @@ df_env <- BCI.env %>%
 # Q6
 # Convert column names of `df_env` to lowercase and reassign to `df_env`
 
-df_env <- janitor::clean_names(df_env)
 
 # Q7
 # In `df_env`, some environmental variables have no variation between plots
 # (i.e., the same value for all plots). Identify these columns and remove them
 # from the dataframe. Assign the resulting dataframe to `df_env_sub`.
 
-v <- sapply(df_env, n_distinct) 
-df_env_sub <- df_env %>% 
-  select(all_of(names(v)[which(v > 1)]))
 
 # Q8
 # Calculate summary statistics for each plot using `df_bci`.
@@ -172,19 +144,11 @@ df_env_sub <- df_env %>%
 # - p: proportion of the most abundant species (n1 / n_sum)
 # Assign the resulting dataframe to `df_n`.
 
-df_n <- df_bci %>% 
-  group_by(plot) %>% 
-  summarize(n_sum = sum(count),
-            n1 = max(count),
-            p = n1 / n_sum)
 
 # Q9
-# Combine the species summary data (`df_n`) with the environmental variables
+# Combine the summary data (`df_n`) with the environmental variables
 # (`df_env_sub`) for each plot. Assign the resulting dataframe to `df_m`.
 
-df_m <- df_n %>% 
-  left_join(df_env_sub,
-            by = "plot")
 
 # Q10
 # Develop a statistical model to explain variation in the proportion of the dominant
@@ -192,9 +156,5 @@ df_m <- df_n %>%
 # Fit a suitable statistical model to the data.
 # Use model selection based on predictability (i.e., out-of-sample prediction) 
 # rather than the goodness of fit, and report which variables are included in 
-# the best predictive model.
+# the best predictive model as a comment.
 
-m <- glm(cbind(n1, n_sum - n1) ~ env_het + stream + habitat, df_m, family = "binomial") 
-
-options(na.action = "na.fail")
-(ms <- dredge(m, rank = "AIC"))
