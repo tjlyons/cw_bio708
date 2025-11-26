@@ -24,10 +24,15 @@ head(CO2)
 # CO2 dataframe is a base dataframe. Convert this to a class `tibble`
 # then assign to `df_co2`
 
+df_co2 <- as.tibble(CO2)
 
 # Q2
 # Convert column names to lowercase and reassign to `df_co2`
 
+df_co2 <- df_co2 %>% 
+  rename(plant = Plant,
+         type = Type,
+         treatment = Treatment)
 
 # Q3
 # Create scatter plots of CO₂ uptake versus ambient CO₂ concentration using `df_co2`.
@@ -36,6 +41,25 @@ head(CO2)
 # - Color the points by treatment.
 # - Create separate panels for each plant type (Quebec vs Mississippi) and combine the plots.
 
+unique(df_co2$type)
+
+g1 <- df_co2 %>% 
+  filter(type == "Quebec") %>% 
+  ggplot(aes(x = conc,
+             y = uptake,
+             color = treatment)) + 
+  geom_point() +
+  ggtitle("Quebec")
+
+g2 <- df_co2 %>% 
+  filter(type == "Mississippi") %>% 
+  ggplot(aes(x = conc,
+             y = uptake,
+             color = treatment)) + 
+  geom_point() +
+  ggtitle("Mississippi")
+
+g1 + g2
 
 # Q4
 # The df_co2 dataset contains the following variables:
@@ -52,7 +76,21 @@ head(CO2)
 # 
 # Fit these models separately for each plant origin.
 
+df_co2_queb <- df_co2 %>% 
+  filter(type == "Quebec")
 
+df_co2_miss <- df_co2 %>% 
+  filter(type == "Mississippi")
+
+m_queb <- lm(uptake ~ treatment * conc,
+              df_co2_queb)
+summary(m_queb) 
+
+
+ m_miss <- lm(uptake ~ treatment * conc,
+             data = df_co2_miss)
+summary(m_miss)
+              
 # Q5
 # Based on the models fitted in Q4 for Quebec and Mississippi plants,
 # describe how CO2 assimilation rate responded to ambient CO2
@@ -60,7 +98,15 @@ head(CO2)
 # for each plant origin. Highlight the differences between Quebec and 
 # Mississippi plants, and use the model results to support your answers.
 
-# ENTER YOUR ANSWER HERE as COMMENT:
+# ENTER YOUR ANSWER HERE as COMMENT: In Quebec, the rate of CO2 assimilation
+# rises significantly with ambient CO2 concentration, but this is not
+# significantly different between the chilled and nonchilled treatments.
+# There is no significant interaction between the ambient CO2 concentration and
+# treatment's effect on assimilation. In Mississippi, this is not the case.
+# In MS, both the concentration and treatment are significant, and their
+# interaction is also significant, albeit minimally (p = 0.0482)
+
+
 # (no coding required for this question)
 
 
@@ -129,12 +175,31 @@ df_env <- BCI.env %>%
 # Q6
 # Convert column names of `df_env` to lowercase and reassign to `df_env`
 
+df_env <- df_env %>% 
+  rename(utm.ew = UTM.EW,
+         utm.ns = UTM.NS,
+         precipitation = Precipitation,
+         elevation = Elevation,
+         age.cat = Age.cat,
+         geology = Geology,
+         habitat = Habitat,
+         stream = Stream,
+         envhet = EnvHet)
+
 
 # Q7
 # In `df_env`, some environmental variables have no variation between plots
 # (i.e., the same value for all plots). Identify these columns and remove them
 # from the dataframe. Assign the resulting dataframe to `df_env_sub`.
 
+var(df_env$utm.ns)
+var(df_env$utm.ew)
+var(df_env$precipitation) ## 0
+var(df_env$elevation) ## 0
+var(df_env$envhet)
+
+df_env_sub <- df_env %>% 
+  select(-c(precipitation, elevation))
 
 # Q8
 # Calculate summary statistics for each plot using `df_bci`.
@@ -144,11 +209,25 @@ df_env <- BCI.env %>%
 # - p: proportion of the most abundant species (n1 / n_sum)
 # Assign the resulting dataframe to `df_n`.
 
+df_n <- df_bci %>% 
+  group_by(plot) %>% 
+  summarise(n_sum = sum(count),
+            n1 = max(count),
+            p = n1 / n_sum)
+
+view(df_n)
 
 # Q9
 # Combine the summary data (`df_n`) with the environmental variables
 # (`df_env_sub`) for each plot. Assign the resulting dataframe to `df_m`.
 
+view(df_env_sub)
+
+df_m <- df_n %>% 
+  left_join(df_env_sub,
+            by = "plot")
+
+view(df_m)
 
 # Q10
 # Develop a statistical model to explain variation in the proportion of the dominant
@@ -158,3 +237,12 @@ df_env <- BCI.env %>%
 # rather than the goodness of fit, and report which variables are included in 
 # the best predictive model as a comment.
 
+m_global <- lm(p ~ envhet + stream + habitat,
+               data = df_m)
+
+library(MuMIn)
+options(na.action = "na.fail")
+m_set <- dredge(m_global, rank = "AIC")
+
+## Only Habitat is included in the best predictive model, but EnvHet and
+# Habitat are both included in the second best (delta = 0.41)
